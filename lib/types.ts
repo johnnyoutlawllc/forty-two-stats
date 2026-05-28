@@ -8,6 +8,7 @@ export interface Player {
 }
 
 export interface PlayerStats {
+  archived: boolean;
   id: string;
   name: string;
   color: string;
