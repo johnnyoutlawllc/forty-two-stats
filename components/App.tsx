@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Shell } from './Shell';
 import { HomeView } from './views/HomeView';
 import { StandingsView } from './views/StandingsView';
@@ -7,6 +7,7 @@ import { MatchesView } from './views/MatchesView';
 import { MatchView } from './views/MatchView';
 import { PlayerView } from './views/PlayerView';
 import { H2HView } from './views/H2HView';
+import { RecordModal } from './RecordModal';
 import { getPlayerStats, getMatches, getTeamStats } from '@/lib/data';
 import type { Route, PlayerStats, Match, TeamStat } from '@/lib/types';
 
@@ -16,17 +17,20 @@ export default function App() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<TeamStat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [recordOpen, setRecordOpen] = useState(false);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     Promise.all([getPlayerStats(), getMatches(), getTeamStats()])
       .then(([p, m, t]) => { setPlayers(p); setMatches(m); setTeams(t); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => { refresh(); }, [refresh]);
+
   const nav = (name: string, param?: string) => {
-    if (name === 'player' && param)   { setRoute({ name: 'player', playerId: param }); }
-    else if (name === 'match' && param) { setRoute({ name: 'match', matchId: param }); }
+    if (name === 'player' && param)     setRoute({ name: 'player', playerId: param });
+    else if (name === 'match' && param) setRoute({ name: 'match', matchId: param });
     else if (name === 'h2h') {
       if (param) { const [a, b] = param.split('|'); setRoute({ name: 'h2h', a, b }); }
       else setRoute({ name: 'h2h' });
@@ -58,8 +62,16 @@ export default function App() {
   };
 
   return (
-    <Shell route={route} nav={nav} onRecord={() => {}} players={players}>
-      {view()}
-    </Shell>
+    <>
+      <Shell route={route} nav={nav} onRecord={() => setRecordOpen(true)} players={players}>
+        {view()}
+      </Shell>
+      <RecordModal
+        open={recordOpen}
+        onClose={() => setRecordOpen(false)}
+        players={players}
+        onSaved={() => { setRecordOpen(false); refresh(); nav('matches'); }}
+      />
+    </>
   );
 }
