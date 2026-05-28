@@ -119,12 +119,6 @@ function BottomNav({ route, nav, onRecord }: { route: Route; nav: (n:string) => 
 
 function DominoLogo() {
   return (
-    <div style={{ width:30, height:18, background:'var(--text)', borderRadius:4, position:'relative', display:'inline-flex', flexShrink:0 }}>
-      <span style={{ position:'absolute', top:2, bottom:2, left:'50%', width:1, background:'var(--surface-2)' }} />
-      <span style={{ position:'absolute', top:4, left:5, width:3, height:3, borderRadius:'50%', background:'var(--accent)' }} />
-      <span style={{ position:'absolute', bottom:4, left:9, width:3, height:3, borderRadius:'50%', background:'var(--accent)' }} />
-      <span style={{ position:'absolute', top:4, right:5, width:3, height:3, borderRadius:'50%', background:'var(--accent)' }} />
-      <span style={{ position:'absolute', bottom:4, right:9, width:3, height:3, borderRadius:'50%', background:'var(--accent)' }} />
-    </div>
+    <img src="/icon.svg" alt="42 stats" width={32} height={32} style={{ borderRadius:8, flexShrink:0 }} />
   );
 }
