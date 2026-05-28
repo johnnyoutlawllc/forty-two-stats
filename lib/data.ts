@@ -69,3 +69,14 @@ export async function saveMatch(payload: NewMatchPayload): Promise<string> {
   if (error) throw error;
   return data as string;
 }
+
+export async function addPlayer(name: string, color: string, joined_year: number | null, email: string | null): Promise<string> {
+  const { data, error } = await sb().rpc('add_player', { p_name: name, p_color: color, p_joined_year: joined_year, p_email: email });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function updatePlayer(id: string, name: string, color: string, joined_year: number | null, email: string | null, archived: boolean): Promise<void> {
+  const { error } = await sb().rpc('update_player', { p_id: id, p_name: name, p_color: color, p_joined_year: joined_year, p_email: email, p_archived: archived });
+  if (error) throw error;
+}

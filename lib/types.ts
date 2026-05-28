@@ -5,6 +5,7 @@ export interface Player {
   joined_year: number | null;
   archived: boolean;
   user_id: string | null;
+  email: string | null;
 }
 
 export interface PlayerStats {
