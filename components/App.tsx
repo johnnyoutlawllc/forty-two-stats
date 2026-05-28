@@ -25,13 +25,16 @@ export default function App() {
   }, []);
 
   const nav = (name: string, param?: string) => {
-    if (name === 'player')  setRoute({ name: 'player', playerId: param! });
-    else if (name === 'match') setRoute({ name: 'match', matchId: param! });
-    else if (name === 'h2h' && param) {
-      const [a, b] = param.split('|');
-      setRoute({ name: 'h2h', a, b });
+    if (name === 'player' && param)   { setRoute({ name: 'player', playerId: param }); }
+    else if (name === 'match' && param) { setRoute({ name: 'match', matchId: param }); }
+    else if (name === 'h2h') {
+      if (param) { const [a, b] = param.split('|'); setRoute({ name: 'h2h', a, b }); }
+      else setRoute({ name: 'h2h' });
     }
-    else setRoute({ name: name as Route['name'] });
+    else if (name === 'home')      setRoute({ name: 'home' });
+    else if (name === 'standings') setRoute({ name: 'standings' });
+    else if (name === 'matches')   setRoute({ name: 'matches' });
+    else if (name === 'settings')  setRoute({ name: 'settings' });
     window.scrollTo(0, 0);
   };
 
