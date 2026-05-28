@@ -51,44 +51,21 @@ export interface NewMatchPayload {
 }
 
 export async function saveMatch(payload: NewMatchPayload): Promise<string> {
-  const client = sb();
   const t1Wins = payload.games.filter(g => g.t1 > g.t2).length;
   const t2Wins = payload.games.filter(g => g.t2 > g.t1).length;
 
-  // Insert match
-  const { data: match, error: mErr } = await client.schema('fortytwo').from('matches').insert({
-    played_on: payload.played_on,
-    team1_player_a: payload.team1[0],
-    team1_player_b: payload.team1[1],
-    team2_player_a: payload.team2[0],
-    team2_player_b: payload.team2[1],
-    team1_games_won: t1Wins,
-    team2_games_won: t2Wins,
-  }).select('id').single();
-  if (mErr) throw mErr;
-  const matchId = match.id;
+  const { data, error } = await sb().rpc('save_match', {
+    p_played_on: payload.played_on,
+    p_team1a: payload.team1[0],
+    p_team1b: payload.team1[1],
+    p_team2a: payload.team2[0],
+    p_team2b: payload.team2[1],
+    p_t1_wins: t1Wins,
+    p_t2_wins: t2Wins,
+    p_games: payload.games.map((g, i) => ({ ordinal: i + 1, team1_pts: g.t1, team2_pts: g.t2 })),
+    p_bids: payload.bids.map((b, i) => ({ ordinal: i + 1, bidder_id: b.by, bid_value: String(b.bid), made: b.made })),
+  });
 
-  // Insert games
-  if (payload.games.length > 0) {
-    const { error: gErr } = await client.schema('fortytwo').from('games').insert(
-      payload.games.map((g, i) => ({ match_id: matchId, ordinal: i + 1, team1_pts: g.t1, team2_pts: g.t2 }))
-    );
-    if (gErr) throw gErr;
-  }
-
-  // Insert bids
-  if (payload.bids.length > 0) {
-    const { error: bErr } = await client.schema('fortytwo').from('bids').insert(
-      payload.bids.map((b, i) => ({
-        match_id: matchId,
-        bidder_id: b.by,
-        bid_value: String(b.bid),
-        made: b.made,
-        ordinal: i + 1,
-      }))
-    );
-    if (bErr) throw bErr;
-  }
-
-  return matchId;
+  if (error) throw error;
+  return data as string;
 }
