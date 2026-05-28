@@ -7,7 +7,7 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 
 export const metadata: Metadata = {
   title: "42 Stats",
-  description: "Family 42 dominoes tracker — standings, match history, and player profiles.",
+  description: "Family 42 domino game tracker — standings, match history, player profiles.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
