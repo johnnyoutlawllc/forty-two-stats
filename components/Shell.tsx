@@ -44,7 +44,7 @@ export function Shell({ route, nav, onRecord, players, dark, onToggleDark, child
 }
 
 interface SidebarProps {
-  route: Route; nav: (n:string)=>void; onRecord: ()=>void;
+  route: Route; nav: (n:string, p?:string)=>void; onRecord: ()=>void;
   players: PlayerStats[]; dark: boolean; onToggleDark: ()=>void; mobile?: boolean;
 }
 
@@ -106,7 +106,7 @@ function Sidebar({ route, nav, onRecord, players, dark, onToggleDark, mobile }: 
 }
 
 interface TopbarProps {
-  route: Route; nav: (n:string)=>void; onRecord: ()=>void;
+  route: Route; nav: (n:string, p?:string)=>void; onRecord: ()=>void;
   isMobile: boolean; players: PlayerStats[]; onMenu: ()=>void;
   dark: boolean; onToggleDark: ()=>void;
 }
