@@ -17,7 +17,6 @@ interface Bid  { by: string; bid: string|number; made: boolean; }
 export function RecordModal({ open, onClose, players, onSaved }: { open: boolean; onClose: () => void; players: PlayerStats[]; onSaved: () => void }) {
   const [step, setStep] = useState(0);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const [picked, setPicked] = useState<string[]>([]);
   const [team1, setTeam1] = useState<string[]>([]);
   const [team2, setTeam2] = useState<string[]>([]);
   const [games, setGames] = useState<Game[]>([{ t1: 7, t2: 0 }]);
@@ -81,24 +80,54 @@ export function RecordModal({ open, onClose, players, onSaved }: { open: boolean
                 <input type="date" value={date} onChange={e => setDate(e.target.value)} style={IS} />
               </div>
               <div>
-                <Lbl>Who played?</Lbl>
-                <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-                  {players.map(p => {
-                    const on = picked.includes(p.id);
+                <Lbl>Tap players to assign — tap again to switch teams</Lbl>
+                <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
+                  {players.filter(p => !p.archived).map(p => {
+                    const inT1 = team1.includes(p.id);
+                    const inT2 = team2.includes(p.id);
+                    const tone = inT1 ? '#2e6e57' : inT2 ? '#3a5a8a' : null;
                     return (
                       <button key={p.id} onClick={() => {
-                        setPicked(prev => on ? prev.filter(x => x !== p.id) : [...prev, p.id]);
-                        if (on) { setTeam1(t => t.filter(x => x !== p.id)); setTeam2(t => t.filter(x => x !== p.id)); }
-                      }} style={{ display:'inline-flex', alignItems:'center', gap:6, background: on ? 'color-mix(in oklab, var(--accent) 12%, var(--surface))' : 'var(--surface)', border:`1px solid ${on ? 'color-mix(in oklab, var(--accent) 35%, var(--border))' : 'var(--border)'}`, color: on ? 'var(--accent)' : 'var(--text)', padding:'6px 11px 6px 6px', borderRadius:999, cursor:'pointer', fontFamily:'inherit', fontSize:13, fontWeight: on ? 600 : 500 }}>
+                        if (!inT1 && !inT2) {
+                          // unassigned → Team 1 (if room) else Team 2
+                          if (team1.length < 2) setTeam1(t => [...t, p.id]);
+                          else if (team2.length < 2) setTeam2(t => [...t, p.id]);
+                        } else if (inT1) {
+                          // Team 1 → Team 2 (if room)
+                          setTeam1(t => t.filter(x => x !== p.id));
+                          if (team2.length < 2) setTeam2(t => [...t, p.id]);
+                        } else {
+                          // Team 2 → unassigned
+                          setTeam2(t => t.filter(x => x !== p.id));
+                        }
+                      }} style={{ display:'inline-flex', alignItems:'center', gap:6, background: tone ? `color-mix(in oklab, ${tone} 14%, var(--surface))` : 'var(--surface)', border: `1px solid ${tone ? `color-mix(in oklab, ${tone} 35%, var(--border))` : 'var(--border)'}`, color: tone ? `color-mix(in oklab, ${tone} 85%, var(--text))` : 'var(--text-2)', padding:'6px 11px 6px 6px', borderRadius:999, cursor:'pointer', fontFamily:'inherit', fontSize:13, fontWeight: tone ? 600 : 500, transition:'all 0.1s' }}>
                         <Avatar name={p.name} color={p.color} size="sm" />{p.name}
                       </button>
                     );
                   })}
                 </div>
-              </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-                <div><Lbl>Team 1</Lbl><TeamPicker pool={picked} value={team1} other={team2} onChange={setTeam1} players={players} /></div>
-                <div><Lbl>Team 2</Lbl><TeamPicker pool={picked} value={team2} other={team1} onChange={setTeam2} players={players} /></div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                  {([{label:'Team 1', ids:team1, color:'#2e6e57'}, {label:'Team 2', ids:team2, color:'#3a5a8a'}] as const).map(({label, ids, color}) => (
+                    <div key={label}>
+                      <div style={{ fontSize:11, letterSpacing:'0.06em', textTransform:'uppercase', color:'var(--text-2)', fontWeight:500, marginBottom:6, display:'flex', alignItems:'center', gap:8 }}>
+                        <span style={{ width:8, height:8, borderRadius:'50%', background:color, display:'inline-block' }} />{label}
+                        <span style={{ color:'var(--text-3)', fontWeight:400, textTransform:'none', letterSpacing:0 }}>{ids.length}/2</span>
+                      </div>
+                      <div style={{ border:'1px solid var(--border)', borderRadius:8, padding:'10px 12px', minHeight:52, display:'flex', gap:8, alignItems:'center', background:'var(--surface)', flexWrap:'wrap' }}>
+                        {ids.length === 0 && <span style={{ color:'var(--text-3)', fontSize:12 }}>tap players above</span>}
+                        {ids.map(id => {
+                          const p = players.find(x => x.id === id);
+                          if (!p) return null;
+                          return (
+                            <span key={id} style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:13, fontWeight:600 }}>
+                              <Avatar name={p.name} color={p.color} size="md" />{p.name}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -190,23 +219,6 @@ export function RecordModal({ open, onClose, players, onSaved }: { open: boolean
   );
 }
 
-function TeamPicker({ pool, value, other, onChange, players }: { pool: string[]; value: string[]; other: string[]; onChange: (v: string[]) => void; players: PlayerStats[] }) {
-  return (
-    <div style={{ border:'1px solid var(--border)', borderRadius:8, padding:8, minHeight:60, display:'flex', gap:6, flexWrap:'wrap', background:'var(--surface)' }}>
-      {pool.length===0 && <span style={{ color:'var(--text-3)', fontSize:12, padding:4 }}>pick players above first</span>}
-      {pool.map(id => {
-        const on=value.includes(id), taken=other.includes(id);
-        const p=players.find(x=>x.id===id);
-        if (!p) return null;
-        return (
-          <button key={id} disabled={taken&&!on} onClick={() => onChange(on ? value.filter(x=>x!==id) : [...value, id])} style={{ display:'inline-flex', alignItems:'center', gap:5, background: on ? 'color-mix(in oklab, var(--accent) 14%, var(--surface))' : 'transparent', border:`1px solid ${on ? 'color-mix(in oklab, var(--accent) 35%, var(--border))' : 'var(--border)'}`, color: on ? 'var(--accent)' : taken ? 'var(--text-3)' : 'var(--text)', opacity: taken&&!on ? 0.4 : 1, padding:'4px 9px 4px 4px', borderRadius:999, cursor: taken&&!on ? 'not-allowed' : 'pointer', fontSize:12, fontFamily:'inherit', fontWeight:500 }}>
-            <Avatar name={p.name} color={p.color} size="sm" />{p.name}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function BidPicker({ value, onChange }: { value: string|number; onChange: (v: string|number) => void }) {
   const [open, setOpen] = useState(false);
