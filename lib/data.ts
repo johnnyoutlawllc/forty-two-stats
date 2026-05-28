@@ -6,7 +6,7 @@ const sb = () => createClient();
 export async function getPlayerStats(): Promise<PlayerStats[]> {
   const { data, error } = await sb().from('ft_player_stats').select('*');
   if (error) throw error;
-  return (data ?? []).map(r => ({ ...r, wins: Number(r.wins), losses: Number(r.losses), matches_played: Number(r.matches_played), win_pct: Number(r.win_pct), avg_margin: Number(r.avg_margin) }));
+  return (data ?? []).map(r => ({ ...r, wins: Number(r.wins ?? 0), losses: Number(r.losses ?? 0), matches_played: Number(r.matches_played ?? 0), win_pct: Number(r.win_pct ?? 0), avg_margin: Number(r.avg_margin ?? 0) }));
 }
 
 export async function getPlayers(): Promise<Player[]> {

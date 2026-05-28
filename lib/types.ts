@@ -9,10 +9,12 @@ export interface Player {
 }
 
 export interface PlayerStats {
-  archived: boolean;
   id: string;
   name: string;
   color: string;
+  joined_year: number | null;
+  archived: boolean;
+  email: string | null;
   matches_played: number;
   wins: number;
   losses: number;
