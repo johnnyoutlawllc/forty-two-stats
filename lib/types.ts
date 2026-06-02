@@ -36,3 +36,13 @@ export type Route =
   | { name: 'home' } | { name: 'standings' } | { name: 'matches' }
   | { name: 'match'; matchId: string } | { name: 'player'; playerId: string }
   | { name: 'h2h'; a?: string; b?: string } | { name: 'settings' };
+
+export interface Bid {
+  id: string;
+  match_id: string;
+  game_id: string | null;
+  bidder_id: string;
+  bid_value: string;
+  made: boolean;
+  ordinal: number | null;
+}
