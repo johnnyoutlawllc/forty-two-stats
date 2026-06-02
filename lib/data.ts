@@ -80,3 +80,8 @@ export async function updatePlayer(id: string, name: string, color: string, join
   const { error } = await sb().rpc('update_player', { p_id: id, p_name: name, p_color: color, p_joined_year: joined_year, p_email: email, p_archived: archived });
   if (error) throw error;
 }
+
+export async function saveSessionBids(matchId: string, bids: { player_id: string; bids_attempted: number; bids_made: number }[]): Promise<void> {
+  const { error } = await sb().rpc('save_session_bids', { p_match_id: matchId, p_bids: bids });
+  if (error) throw error;
+}

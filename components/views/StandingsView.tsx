@@ -54,7 +54,7 @@ export function StandingsView({ players, teams, matches, onNav }: { players: Pla
               <Th sortKey="losses" sort={sort} setSort={setSort} align="right" width={60}>L</Th>
               <Th sortKey="win_pct" sort={sort} setSort={setSort} align="right" width={80}>Pct</Th>
               <Th sortKey="avg_margin" sort={sort} setSort={setSort} align="right" width={90}>Avg. marg</Th>
-              <Th sortKey={mode==='players' ? 'bid_win_pct' : 'score_42plus'} sort={sort} setSort={setSort} align="right" width={80}>{mode==='players' ? 'Bid %' : '42+'}</Th>
+              <Th sortKey={mode==='players' ? 'bid_war' : 'score_42plus'} sort={sort} setSort={setSort} align="right" width={80}>{mode==='players' ? 'BidWAR' : '42+'}</Th>
               <Th align="right" width={100}>Form</Th>
             </tr>
           </thead>
