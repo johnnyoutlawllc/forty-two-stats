@@ -13,7 +13,7 @@ import { SettingsView } from './views/SettingsView';
 import { RecordModal } from './RecordModal';
 import { Btn } from './ui';
 import { useAuth } from '@/lib/auth';
-import { getMyLeagues, getDemoLeague, createLeague } from '@/lib/leagues';
+import { getMyLeagues, getDemoLeague, createLeague, acceptPendingInvites } from '@/lib/leagues';
 import { getPlayerStats, getMatches, getTeamStats } from '@/lib/data';
 import type { Route, PlayerStats, Match, TeamStat, League } from '@/lib/types';
 
@@ -64,6 +64,7 @@ export default function App() {
     setLeaguesLoading(true);
     try {
       if (user) {
+        await acceptPendingInvites();
         const mine = await getMyLeagues();
         setLeagues(mine);
         setLeague(prev => {

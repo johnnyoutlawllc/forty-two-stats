@@ -3,6 +3,16 @@ import type { League, LeagueShare } from './types';
 
 const ft = () => createClient().schema('fortytwo');
 
+/**
+ * Redeem league invites addressed to this account's email. Safe to call again on
+ * every load. Must finish before getMyLeagues, or a freshly invited person sees
+ * nothing until they reload.
+ */
+export async function acceptPendingInvites(): Promise<void> {
+  const { error } = await ft().rpc('accept_pending_invites');
+  if (error) console.error('accept_pending_invites', error.message);
+}
+
 /** Leagues the signed-in user owns or has been shared into. */
 export async function getMyLeagues(): Promise<League[]> {
   const { data, error } = await ft().rpc('my_leagues');

@@ -39,14 +39,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => { active = false; sub.subscription.unsubscribe(); };
   }, []);
 
-  // Redeem any league invites addressed to this email. Safe to call repeatedly.
-  useEffect(() => {
-    if (!session?.user) return;
-    createClient().schema('fortytwo').rpc('accept_pending_invites').then(({ error }) => {
-      if (error) console.error('accept_pending_invites', error.message);
-    });
-  }, [session?.user?.id]);
-
   const signIn = useCallback(async () => {
     await createClient().auth.signInWithOAuth({
       provider: 'google',
