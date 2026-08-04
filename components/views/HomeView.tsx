@@ -61,7 +61,7 @@ export function HomeView({ players, matches, teams, onNav }: { players: PlayerSt
               <span style={{ flex:1, textAlign:'right' }}>{months[months.length-1]?.[0]}</span>
             </div>
           </Card>
-          <Card title="Standings — top 4" action={<Btn kind="bare" onClick={() => onNav('standings')}>All →</Btn>} padded={false}>
+          <Card title="Standings · top 4" action={<Btn kind="bare" onClick={() => onNav('standings')}>All →</Btn>} padded={false}>
             {ranked.slice(0, 4).map((p, i) => (
               <div key={p.id} onClick={() => onNav('player', p.id)} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 16px', borderTop:'1px solid var(--border)', fontSize:13, cursor:'pointer' }}>
                 <span style={{ width:14, color:'var(--text-2)', fontFamily:'monospace', fontSize:12 }}>{i+1}</span>

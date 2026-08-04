@@ -29,8 +29,8 @@ export function Landing({ onSignIn, onDemo }: { onSignIn: () => void; onDemo: ()
 
         <p style={{ fontSize:16, lineHeight:1.6, color:'var(--text-2)', margin:'0 0 28px' }}>
           Sign in with Google to save your games. Your stats are yours and nobody else can
-          see them until you share them &mdash; then invite your family by email so everyone
-          can follow along. It is free, and it is built for families.
+          see them until you share them. Invite your family by email so everyone can
+          follow along. It is free, and it is built for families.
         </p>
 
         <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:30 }}>
@@ -48,11 +48,32 @@ export function Landing({ onSignIn, onDemo }: { onSignIn: () => void; onDemo: ()
           <Point title="Stats that add up" body="Standings, head-to-head, streaks, partner records and BidWAR, all from the scores you enter." />
         </div>
 
+        <div style={{ display:'grid', gap:16, marginBottom:26 }}>
+          <Shot src="/screenshots/home.png" alt="The 42 stats home dashboard showing standings, recent matches and activity"
+            caption="The dashboard builds itself from the matches you record." />
+          <Shot src="/screenshots/player.png" alt="A player profile with win percentage over time, best partners and recent matches"
+            caption="Every player gets a profile: form, best partners, and win percentage over time." />
+          <Shot src="/screenshots/h2h.png" alt="Head-to-head comparison between two players with series record and match list"
+            caption="Head-to-head settles the family arguments with the actual record." />
+        </div>
+
         <p style={{ fontSize:12.5, color:'var(--text-3)', margin:0, lineHeight:1.6 }}>
           Free to use. We store your email address and the games you record, nothing else.
         </p>
       </div>
     </div>
+  );
+}
+
+function Shot({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+  return (
+    <figure style={{ margin:0 }}>
+      <img src={src} alt={alt} loading="lazy"
+        style={{ width:'100%', display:'block', borderRadius:10, border:'1px solid var(--border)' }} />
+      <figcaption style={{ fontSize:12.5, color:'var(--text-2)', marginTop:7, lineHeight:1.5 }}>
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 
