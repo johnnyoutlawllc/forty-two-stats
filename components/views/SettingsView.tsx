@@ -8,7 +8,10 @@ import type { PlayerStats } from '@/lib/types';
 const COLORS = ['#c2532b','#2e6e57','#3a5a8a','#8a4f9c','#b08d2e','#5b6770','#7a4a2e','#5d8a4c','#9c6b3a','#c4687a'];
 const IS: React.CSSProperties = { background:'var(--surface)', border:'1px solid var(--border)', borderRadius:8, padding:'8px 12px', fontFamily:'inherit', fontSize:14, color:'var(--text)', width:'100%' };
 
-export function SettingsView({ players, onNav, onRefresh }: { players: PlayerStats[]; onNav: (n:string,p?:string)=>void; onRefresh: ()=>void }) {
+export function SettingsView({ players, onNav, onRefresh, leagueId, canEdit }: {
+  players: PlayerStats[]; onNav: (n:string,p?:string)=>void; onRefresh: ()=>void;
+  leagueId: string; canEdit: boolean;
+}) {
   const [showArchived, setShowArchived] = useState(false);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<PlayerStats | null>(null);
@@ -20,11 +23,15 @@ export function SettingsView({ players, onNav, onRefresh }: { players: PlayerSta
       <header style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:12, flexWrap:'wrap' }}>
         <div>
           <h1 style={{ fontSize:22, fontWeight:600, margin:0 }}>Players</h1>
-          <p style={{ margin:'2px 0 0', color:'var(--text-2)', fontSize:13 }}>Manage players. Linking Google accounts comes when auth is wired up.</p>
+          <p style={{ margin:'2px 0 0', color:'var(--text-2)', fontSize:13 }}>
+            {canEdit
+              ? 'Add an email to a player and their stats link up the first time they sign in.'
+              : 'You have view access to this league, so players cannot be changed here.'}
+          </p>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           <Btn kind="ghost" onClick={() => setShowArchived(v=>!v)}>{showArchived ? 'Hide archived' : 'Show archived'}</Btn>
-          <Btn kind="primary" icon="+" onClick={() => setAdding(true)}>Add player</Btn>
+          {canEdit && <Btn kind="primary" icon="+" onClick={() => setAdding(true)}>Add player</Btn>}
         </div>
       </header>
 
@@ -64,7 +71,7 @@ export function SettingsView({ players, onNav, onRefresh }: { players: PlayerSta
                 </td>
                 <td style={{ padding:'12px 14px', textAlign:'right' }}>
                   <div style={{ display:'inline-flex', gap:6 }}>
-                    <Btn kind="ghost" onClick={() => setEditing(p)}>Edit</Btn>
+                    {canEdit && <Btn kind="ghost" onClick={() => setEditing(p)}>Edit</Btn>}
                     <Btn kind="bare" onClick={() => onNav('player', p.id)}>View →</Btn>
                   </div>
                 </td>
@@ -74,14 +81,16 @@ export function SettingsView({ players, onNav, onRefresh }: { players: PlayerSta
         </table>
       </Card>
 
-      {adding && (
+      {adding && canEdit && (
         <PlayerModal
+          leagueId={leagueId}
           onClose={() => setAdding(false)}
           onSaved={() => { setAdding(false); onRefresh(); }}
         />
       )}
-      {editing && (
+      {editing && canEdit && (
         <PlayerModal
+          leagueId={leagueId}
           player={editing}
           onClose={() => setEditing(null)}
           onSaved={() => { setEditing(null); onRefresh(); }}
@@ -91,7 +100,7 @@ export function SettingsView({ players, onNav, onRefresh }: { players: PlayerSta
   );
 }
 
-function PlayerModal({ player, onClose, onSaved }: { player?: PlayerStats; onClose: ()=>void; onSaved: ()=>void }) {
+function PlayerModal({ player, leagueId, onClose, onSaved }: { player?: PlayerStats; leagueId: string; onClose: ()=>void; onSaved: ()=>void }) {
   const [name, setName]       = useState(player?.name ?? '');
   const [color, setColor]     = useState(player?.color ?? COLORS[0]);
   const [year, setYear]       = useState(player?.joined_year ? String(player.joined_year) : String(new Date().getFullYear()));
@@ -109,7 +118,7 @@ function PlayerModal({ player, onClose, onSaved }: { player?: PlayerStats; onClo
       if (player) {
         await updatePlayer(player.id, name.trim(), color, yr, em, archived);
       } else {
-        await addPlayer(name.trim(), color, yr, em);
+        await addPlayer(leagueId, name.trim(), color, yr, em);
       }
       onSaved();
     } catch (e: unknown) { setError(e instanceof Error ? e.message : 'Save failed.'); }

@@ -12,8 +12,8 @@ function Lbl({ children }: { children: React.ReactNode }) {
 interface Game { t1: number; t2: number }
 interface BidEntry { player_id: string; bids_attempted: number; bids_made: number }
 
-export function RecordModal({ open, onClose, players, onSaved }: {
-  open: boolean; onClose: () => void; players: PlayerStats[]; onSaved: () => void;
+export function RecordModal({ open, onClose, players, leagueId, onSaved }: {
+  open: boolean; onClose: () => void; players: PlayerStats[]; leagueId: string; onSaved: () => void;
 }) {
   const [step, setStep]   = useState(0);
   const [date, setDate]   = useState(new Date().toISOString().slice(0, 10));
@@ -64,6 +64,7 @@ export function RecordModal({ open, onClose, players, onSaved }: {
     setSaving(true); setError('');
     try {
       const matchId = await saveMatch({
+        league_id: leagueId,
         played_on: date, team1: [team1[0], team1[1]], team2: [team2[0], team2[1]], games, bids: []
       });
       const bidsToSave = bidEntries.filter(b => b.bids_attempted > 0);
