@@ -89,7 +89,7 @@ export function StandingsView({ players, teams, matches, onNav }: { players: Pla
                   <td style={{ padding:'11px 12px', textAlign:'right', fontFamily:'monospace', color: Number(r.avg_margin)>0 ? 'var(--good)' : Number(r.avg_margin)<0 ? 'var(--bad)' : 'var(--text-2)' }}>{fmtMarg(r.avg_margin)}</td>
                   <td style={{ padding:'11px 12px', textAlign:'right', fontFamily:'monospace' }}>
                     {mode === 'players'
-                      ? (r.bid_win_pct != null ? Number(r.bid_win_pct).toFixed(3).replace(/^0/,'') : <span style={{ color:'var(--text-3)' }}>—</span>)
+                      ? (r.bid_war != null ? (Number(r.bid_war) > 0 ? '+' : '') + Number(r.bid_war).toFixed(3).replace(/^(-?)0/, '$1') : <span style={{ color:'var(--text-3)' }}>—</span>)
                       : (Number(r.score_42plus) > 0 ? '+' : '') + Number(r.score_42plus).toFixed(1)
                     }
                   </td>

@@ -45,7 +45,7 @@ export function Landing({ onSignIn, onDemo }: { onSignIn: () => void; onDemo: ()
         <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap:12, marginBottom:26 }}>
           <Point title="Private by default" body="Nobody sees your games unless you invite them. Signed-out visitors only ever see the sample league." />
           <Point title="Share with family" body="Invite by email as a viewer who can follow along, or an editor who can record match nights too." />
-          <Point title="Stats that add up" body="Standings, head-to-head, streaks, partner records and BidWAR, all from the scores you enter." />
+          <Point title="Stats that add up" body="Standings, head-to-head, recent form, partner records and BidWAR, all from the scores you enter." />
         </div>
 
         <div style={{ display:'grid', gap:16, marginBottom:26 }}>

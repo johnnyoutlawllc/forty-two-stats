@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Card, TeamLabel, Pill, Btn, Avatar } from '../ui';
 import { fmtDateLong } from '@/lib/utils';
 import { getMatch } from '@/lib/data';
-import type { Match, Game, Bid } from '@/lib/types';
+import type { Match, Game } from '@/lib/types';
 
 export function MatchView({ matchId, onNav }: { matchId: string; onNav: (n: string, p?: string) => void }) {
   const [data, setData] = useState<{ match: Match; games: Game[]; bids: any[] } | null>(null);
@@ -44,14 +44,19 @@ export function MatchView({ matchId, onNav }: { matchId: string; onNav: (n: stri
         </Card>
         <Card title="Bids called" padded={false}>
           {bids.length === 0 && <div style={{ padding:20, color:'var(--text-2)', fontSize:13, textAlign:'center' }}>No bids logged.</div>}
-          {bids.map((b, i) => (
-            <div key={b.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 18px', borderTop: i ? '1px solid var(--border)' : 'none', fontSize:13 }}>
-              <Avatar name={b.bidder_name} color={b.bidder_color || '#888'} size="sm" />
-              <span style={{ flex:1, fontWeight:500 }}>{b.bidder_name}</span>
-              <span style={{ fontFamily:'monospace', color:'var(--text-2)' }}>bid {b.bid_value}</span>
-              <Pill tone={b.made ? 'good' : 'bad'} size="sm">{b.made ? 'made' : 'set'}</Pill>
-            </div>
-          ))}
+          {bids.map((b, i) => {
+            const attempted = Number(b.bids_attempted ?? 0);
+            const made = Number(b.bids_made ?? 0);
+            const net = made - (attempted - made);
+            return (
+              <div key={b.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 18px', borderTop: i ? '1px solid var(--border)' : 'none', fontSize:13 }}>
+                <Avatar name={b.bidder_name} color={b.bidder_color || '#888'} size="sm" />
+                <span style={{ flex:1, fontWeight:500 }}>{b.bidder_name}</span>
+                <span style={{ fontFamily:'monospace', color:'var(--text-2)' }}>made {made} of {attempted}</span>
+                <Pill tone={net >= 0 ? 'good' : 'bad'} size="sm">{net > 0 ? `+${net}` : net}</Pill>
+              </div>
+            );
+          })}
         </Card>
       </div>
     </div>

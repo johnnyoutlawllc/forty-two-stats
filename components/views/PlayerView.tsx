@@ -78,7 +78,12 @@ export function PlayerView({ playerId, players, matches, teams, onNav }: { playe
         <StatTile label="Win–loss" value={`${p.wins}–${p.losses}`} hint={`${games} matches`} />
         <StatTile label="Win pct" value={fmtPct(p.wins, p.losses)} hint={pct >= 0.5 ? 'above .500' : 'below .500'} tone={pct >= 0.5 ? 'accent' : undefined} />
         <StatTile label="Avg. margin" value={fmtMarg(p.avg_margin)} hint="games per match" />
-        <StatTile label="Bid win %" value="—" hint="coming soon" />
+        <StatTile
+          label="BidWAR"
+          value={p.bid_war != null ? (p.bid_war > 0 ? '+' : '') + p.bid_war.toFixed(3).replace(/^(-?)0/, '$1') : '—'}
+          hint={p.bid_war != null ? 'bids made minus set, per match' : 'no bids logged yet'}
+          tone={p.bid_war != null && p.bid_war > 0 ? 'accent' : undefined}
+        />
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:16, alignItems:'start' }}>
         <Card title="Win % over time" padded>
