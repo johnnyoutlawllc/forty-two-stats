@@ -11,9 +11,10 @@
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
-    "next": "15.3.9",
+    "next": "15.5.28",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -23,6 +24,11 @@
     "@tailwindcss/postcss": "^4",
     "typescript": "^5",
     "eslint": "^9",
-    "eslint-config-next": "15.3.9"
+    "eslint-config-next": "15.5.28"
+  },
+  "overrides": {
+    "next": {
+      "sharp": "0.35.5"
+    }
   }
 }
